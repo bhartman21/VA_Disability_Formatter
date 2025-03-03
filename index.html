@@ -1,4 +1,3 @@
-<!-- https://api.va.gov/v0/rated_disabilities -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,17 +38,106 @@
         th:hover {
             background: #ccc;
         }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            width: 50%;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .modal-content h2 {
+            margin-top: 0;
+        }
+        .close {
+            float: right;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: red;
+        }
+        button {
+            padding: 8px 12px;
+            margin: 10px 0;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background: #007BFF;
+            color: white;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
     </style>
 </head>
 <body>
 
     <h2>VA Disability Ratings Viewer</h2>
+    <button onclick="openModal()">How to Use</button>
     <label for="json-input">Paste JSON here:</label>
     <textarea id="json-input"></textarea>
     <button onclick="convertToTable()">Convert to Table</button>
 
     <h3>Formatted Table:</h3>
     <div id="json-output">No data yet...</div>
+
+    <!-- Modal Popup -->
+    <div id="howToUseModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>How to Use</h2>
+            <p><strong>1️⃣ Log in to VA.gov:</strong></p>
+            <ul>
+                <li>Go to <a href="https://www.va.gov/" target="_blank">VA.gov</a> and log in.</li>
+            </ul>
+
+            <p><strong>2️⃣ Get Your Disability Ratings Data:</strong></p>
+            <ul>
+                <li>Open a <strong>new browser tab</strong>.</li>
+                <li>Go to: <a href="https://api.va.gov/v0/rated_disabilities" target="_blank">https://api.va.gov/v0/rated_disabilities</a></li>
+                <li>The page will display raw JSON data.</li>
+            </ul>
+
+            <p><strong>3️⃣ Copy the JSON Data:</strong></p>
+            <ul>
+                <li>Press <strong>Ctrl + A</strong> (or <strong>Cmd + A</strong> on Mac) to select all text.</li>
+                <li>Press <strong>Ctrl + C</strong> (or <strong>Cmd + C</strong> on Mac) to copy it.</li>
+            </ul>
+
+            <p><strong>4️⃣ Paste the JSON Data:</strong></p>
+            <ul>
+                <li>Return to this page.</li>
+                <li>Click inside the text area and press <strong>Ctrl + V</strong> (or <strong>Cmd + V</strong> on Mac) to paste.</li>
+            </ul>
+
+            <p><strong>5️⃣ Convert to Table:</strong></p>
+            <ul>
+                <li>Click the <strong>"Convert to Table"</strong> button.</li>
+                <li>Your disability ratings will appear in an easy-to-read table.</li>
+            </ul>
+
+            <p><strong>💡 Additional Tips:</strong></p>
+            <ul>
+                <li>If you see an <strong>"Invalid JSON"</strong> error, check that all text was copied correctly.</li>
+                <li>Click any <strong>column header</strong> to <strong>sort</strong> the table.</li>
+            </ul>
+        </div>
+    </div>
 
     <script>
         let currentSortColumn = null;
@@ -115,7 +203,6 @@
             const table = document.querySelector("table tbody");
             const rows = Array.from(table.rows);
 
-            // Toggle sorting order if the same column is clicked
             if (currentSortColumn === columnName) {
                 sortAscending = !sortAscending;
             } else {
@@ -127,7 +214,6 @@
                 let cellA = rowA.cells[columnIndex].textContent.trim();
                 let cellB = rowB.cells[columnIndex].textContent.trim();
 
-                // Convert to numbers if possible for proper numeric sorting
                 const numA = parseFloat(cellA);
                 const numB = parseFloat(cellB);
 
@@ -138,9 +224,16 @@
                 }
             });
 
-            // Reorder the table with sorted rows
             table.innerHTML = "";
             rows.forEach(row => table.appendChild(row));
+        }
+
+        function openModal() {
+            document.getElementById("howToUseModal").style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById("howToUseModal").style.display = "none";
         }
     </script>
 
