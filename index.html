@@ -1,0 +1,148 @@
+<!-- https://api.va.gov/v0/rated_disabilities -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VA Disability Ratings</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            font-family: monospace;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background: #fff;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            background: #ddd;
+            cursor: pointer;
+        }
+        th:hover {
+            background: #ccc;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>VA Disability Ratings Viewer</h2>
+    <label for="json-input">Paste JSON here:</label>
+    <textarea id="json-input"></textarea>
+    <button onclick="convertToTable()">Convert to Table</button>
+
+    <h3>Formatted Table:</h3>
+    <div id="json-output">No data yet...</div>
+
+    <script>
+        let currentSortColumn = null;
+        let sortAscending = true;
+
+        function convertToTable() {
+            const input = document.getElementById("json-input").value;
+            const output = document.getElementById("json-output");
+
+            try {
+                const jsonData = JSON.parse(input);
+
+                if (jsonData.data && jsonData.data.attributes && jsonData.data.attributes.individual_ratings) {
+                    const ratings = jsonData.data.attributes.individual_ratings;
+                    output.innerHTML = jsonArrayToTable(ratings);
+                } else {
+                    throw new Error("Invalid JSON structure.");
+                }
+            } catch (error) {
+                output.innerHTML = `<p style="color: red;">Invalid JSON!</p>`;
+            }
+        }
+
+        function jsonArrayToTable(jsonArray) {
+            if (jsonArray.length === 0) {
+                return "<p>No data to display</p>";
+            }
+
+            const headers = [
+                "decision", 
+                "effective_date", 
+                "rating_end_date", 
+                "rating_percentage", 
+                "diagnostic_type_code", 
+                "diagnostic_type_name", 
+                "diagnostic_text", 
+                "disability_rating_id", 
+                "static_ind"
+            ];
+
+            let table = "<table><thead><tr>";
+
+            headers.forEach((header, index) => {
+                table += `<th onclick="sortTable(${index}, '${header}')">${header.replace(/_/g, " ").toUpperCase()}</th>`;
+            });
+
+            table += "</tr></thead><tbody>";
+
+            jsonArray.forEach(item => {
+                table += "<tr>";
+                headers.forEach(header => {
+                    let value = item[header] !== undefined ? item[header] : "";
+                    table += `<td>${value}</td>`;
+                });
+                table += "</tr>";
+            });
+
+            table += "</tbody></table>";
+            return table;
+        }
+
+        function sortTable(columnIndex, columnName) {
+            const table = document.querySelector("table tbody");
+            const rows = Array.from(table.rows);
+
+            // Toggle sorting order if the same column is clicked
+            if (currentSortColumn === columnName) {
+                sortAscending = !sortAscending;
+            } else {
+                sortAscending = true;
+            }
+            currentSortColumn = columnName;
+
+            rows.sort((rowA, rowB) => {
+                let cellA = rowA.cells[columnIndex].textContent.trim();
+                let cellB = rowB.cells[columnIndex].textContent.trim();
+
+                // Convert to numbers if possible for proper numeric sorting
+                const numA = parseFloat(cellA);
+                const numB = parseFloat(cellB);
+
+                if (!isNaN(numA) && !isNaN(numB)) {
+                    return sortAscending ? numA - numB : numB - numA;
+                } else {
+                    return sortAscending ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+                }
+            });
+
+            // Reorder the table with sorted rows
+            table.innerHTML = "";
+            rows.forEach(row => table.appendChild(row));
+        }
+    </script>
+
+</body>
+</html>
