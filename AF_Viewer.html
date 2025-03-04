@@ -119,6 +119,47 @@
         function closeModal() {
             document.getElementById("howToUseModal").style.display = "none";
         }
+
+        function sortTable(columnIndex, columnName) {
+            const table = document.querySelector("table tbody");
+            if (!table) return;
+
+            const rows = Array.from(table.rows);
+
+            // Track current sorting state
+            if (!sortTable.sortStates) {
+                sortTable.sortStates = {};
+            }
+
+            // Toggle sorting order
+            if (sortTable.sortStates[columnName] === "asc") {
+                sortTable.sortStates[columnName] = "desc";
+            } else {
+                sortTable.sortStates[columnName] = "asc";
+            }
+
+            const ascending = sortTable.sortStates[columnName] === "asc";
+
+            rows.sort((rowA, rowB) => {
+                let cellA = rowA.cells[columnIndex].textContent.trim();
+                let cellB = rowB.cells[columnIndex].textContent.trim();
+
+                // Convert to numbers if applicable
+                const numA = parseFloat(cellA);
+                const numB = parseFloat(cellB);
+
+                if (!isNaN(numA) && !isNaN(numB)) {
+                    return ascending ? numA - numB : numB - numA;
+                } else {
+                    return ascending ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+                }
+            });
+
+            // Update table with sorted rows
+            table.innerHTML = "";
+            rows.forEach(row => table.appendChild(row));
+        }
+
     </script>
 
 </body>
