@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VA Disability Ratings</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <h2>🇺🇸 VA Disability Ratings Viewer 🇺🇸</h2>
+    <button onclick="openModal()">How to Use</button>
+    <label for="json-input">Paste JSON here:</label>
+    <textarea id="json-input"></textarea>
+    <button onclick="convertToTable()">Convert to Table</button>
+
+    <h3>Formatted Table:</h3>
+    <div id="json-output">No data yet...</div>
+
+    <!-- Modal Popup -->
+    <div id="howToUseModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>How to Use</h2>
+            <p><strong>1️⃣ Log in to VA.gov:</strong></p>
+            <ul>
+                <li>Go to <a href="https://www.va.gov/" target="_blank">VA.gov</a> and log in.</li>
+            </ul>
+
+            <p><strong>2️⃣ Get Your Disability Ratings Data:</strong></p>
+            <ul>
+                <li>Open a <strong>new browser tab</strong>.</li>
+                <li>Go to: <a href="https://api.va.gov/v0/rated_disabilities" target="_blank">https://api.va.gov/v0/rated_disabilities</a></li>
+                <li>The page will display raw JSON data.</li>
+            </ul>
+
+            <p><strong>3️⃣ Copy the JSON Data:</strong></p>
+            <ul>
+                <li>Press <strong>Ctrl + A</strong> (or <strong>Cmd + A</strong> on Mac) to select all text.</li>
+                <li>Press <strong>Ctrl + C</strong> (or <strong>Cmd + C</strong> on Mac) to copy it.</li>
+            </ul>
+
+            <p><strong>4️⃣ Paste the JSON Data:</strong></p>
+            <ul>
+                <li>Return to this page.</li>
+                <li>Click inside the text area and press <strong>Ctrl + V</strong> (or <strong>Cmd + V</strong> on Mac) to paste.</li>
+            </ul>
+
+            <p><strong>5️⃣ Convert to Table:</strong></p>
+            <ul>
+                <li>Click the <strong>"Convert to Table"</strong> button.</li>
+                <li>Your disability ratings will appear in an easy-to-read table.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function convertToTable() {
+            const input = document.getElementById("json-input").value;
+            const output = document.getElementById("json-output");
+
+            try {
+                const jsonData = JSON.parse(input);
+
+                if (jsonData.data && jsonData.data.attributes && jsonData.data.attributes.individual_ratings) {
+                    const ratings = jsonData.data.attributes.individual_ratings;
+                    output.innerHTML = jsonArrayToTable(ratings);
+                } else {
+                    throw new Error("Invalid JSON structure.");
+                }
+            } catch (error) {
+                output.innerHTML = `<p style="color: red;">Invalid JSON!</p>`;
+            }
+        }
+
+        function jsonArrayToTable(jsonArray) {
+            if (jsonArray.length === 0) {
+                return "<p>No data to display</p>";
+            }
+
+            const headers = [
+                "decision", 
+                "effective_date", 
+                "rating_end_date", 
+                "rating_percentage", 
+                "diagnostic_type_code", 
+                "diagnostic_type_name", 
+                "diagnostic_text", 
+                "disability_rating_id", 
+                "static_ind"
+            ];
+
+            let table = "<table><thead><tr>";
+
+            headers.forEach((header, index) => {
+                table += `<th onclick="sortTable(${index}, '${header}')">${header.replace(/_/g, " ").toUpperCase()}</th>`;
+            });
+
+            table += "</tr></thead><tbody>";
+
+            jsonArray.forEach(item => {
+                table += "<tr>";
+                headers.forEach(header => {
+                    let value = item[header] !== undefined ? item[header] : "";
+                    table += `<td>${value}</td>`;
+                });
+                table += "</tr>";
+            });
+
+            table += "</tbody></table>";
+            return table;
+        }
+
+        function openModal() {
+            document.getElementById("howToUseModal").style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById("howToUseModal").style.display = "none";
+        }
+    </script>
+
+</body>
+</html>
