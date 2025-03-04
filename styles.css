@@ -14,6 +14,17 @@ h2 {
     text-shadow: 2px 2px 4px black;
 }
 
+h3 {
+    color: #0000cc;
+    text-shadow: 2px 2px 4px black;
+}
+
+/* Labels */
+label {
+    font-family: Arial, sans-serif;
+    color: #000000;
+}
+
 /* Buttons */
 button {
     padding: 10px 15px;
