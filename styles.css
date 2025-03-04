@@ -10,7 +10,7 @@ body {
 
 /* Headings */
 h2 {
-    color: blue;
+    color: #cc0000;
     text-shadow: 2px 2px 4px black;
 }
 
@@ -21,7 +21,7 @@ button {
     font-size: 16px;
     cursor: pointer;
     border: none;
-    background: #cc0000;
+    background: #0000cc;
     color: white;
     border-radius: 5px;
     font-weight: bold;
