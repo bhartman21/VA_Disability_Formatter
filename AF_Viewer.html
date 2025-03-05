@@ -14,6 +14,7 @@
     <label for="json-input">Paste JSON here:</label>
     <textarea id="json-input"></textarea>
     <button onclick="convertToTable()">Convert to Table</button>
+    <button onclick="downloadCSV()">Download Table</button>
 
     <h3>Formatted Table:</h3>
     <div id="json-output">No data yet...</div>
@@ -158,6 +159,37 @@
             // Update table with sorted rows
             table.innerHTML = "";
             rows.forEach(row => table.appendChild(row));
+        }
+
+        function downloadCSV() {
+            const table = document.querySelector("table");
+            if (!table) {
+                alert("No table data to export.");
+                return;
+            }
+        
+            let csvContent = "";
+            const rows = table.querySelectorAll("tr");
+        
+            rows.forEach(row => {
+                let rowData = [];
+                row.querySelectorAll("th, td").forEach(cell => {
+                    let cellText = cell.textContent.trim().replace(/"/g, '""'); // Escape double quotes
+                    rowData.push(`"${cellText}"`);
+                });
+                csvContent += rowData.join(",") + "\n"; // Join columns with commas and add new line
+            });
+        
+            // Create a Blob and trigger the download
+            const blob = new Blob([csvContent], { type: "text/csv" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+        
+            a.href = url;
+            a.download = "VA_Disability_Ratings.csv";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         }
 
     </script>
