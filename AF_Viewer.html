@@ -114,51 +114,6 @@
             return table;
         }
 
-        /*
-        function jsonArrayToTable(jsonArray) {
-            if (jsonArray.length === 0) {
-                return "<p>No data to display</p>";
-            }
-
-            const headers = [
-                "decision", 
-                "effective_date", 
-                "rating_end_date", 
-                "rating_percentage", 
-                "diagnostic_type_code", 
-                "diagnostic_type_name", 
-                "diagnostic_text", 
-                "disability_rating_id", 
-                "static_ind"
-            ];
-
-            let table = "<table><thead><tr>";
-
-            headers.forEach((header, index) => {
-                table += `<th onclick="multiSort('${header}')">${header.replace(/_/g, " ").toUpperCase()}</th>`;
-            });
-
-            table += "</tr></thead><tbody>";
-
-            jsonArray.forEach(item => {
-                table += "<tr>";
-                headers.forEach(header => {
-                    let value = item[header] !== undefined ? item[header] : "";
-
-                    if (header === "diagnostic_type_code" && item.hyph_diagnostic_type_code) {
-                        value += ` [${item.hyph_diagnostic_type_code}]`;
-                    }
-
-                    table += `<td>${value}</td>`;
-                });
-                table += "</tr>";
-            });
-
-            table += "</tbody></table>";
-            return table;
-        }
-        */
-        
         function openModal() {
             document.getElementById("howToUseModal").style.display = "block";
         }
