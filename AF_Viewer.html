@@ -107,6 +107,11 @@
                 table += "<tr>";
                 headers.forEach(header => {
                     let value = item[header] !== undefined ? item[header] : "";
+                    
+                    if (header === "diagnostic_type_code" && item.hyph_diagnostic_type_code) {
+                         value += ` [${item.hyph_diagnostic_type_code}]`;
+                     } 
+                    
                     table += `<td>${value}</td>`;
                 });
                 table += "</tr>";
